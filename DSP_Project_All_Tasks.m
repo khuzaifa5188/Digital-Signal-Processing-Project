@@ -4,11 +4,13 @@ function DSP_Project_All_Tasks
 %
 % Includes:
 %   TASK 1 / Part A: AWGN + LPF (designfilt/fvtool) + Notch (designfilt/fvtool)
-%   TASK 3: Echo + Flange + Reverb (few-samples plots to clearly show effects)
+%   TASK 2 / Part B: Real-time 10-band Graphic EQ (audioDeviceReader/Writer)
+%   TASK 3: Echo + Flange + Reverb (few-samples plots) and Part3 full step-by-step
 %
-% NOTE ABOUT TASK 2:
-%   You did not provide Task 2 code in chat, so it is NOT included here.
-%   Paste your Task 2 code and I will merge it into this same file.
+% Notes:
+%   - Task 2 is provided as a separate function `task2_partB_realtime_10band_eq.m`.
+%   - Task 3 has two helpers: `task3_part3_effects_few_samples` (few-samples plots)
+%     and `part3_voice_step_by_step_play_and_plots` (full 10s play/plots and WAV exports).
 %
 % Input file required in same folder:
 %   recorded_full.wav
@@ -26,11 +28,35 @@ segmentDurSec   = 10;    % 10 seconds
 fprintf("\n===== DSP PROJECT (ALL TASKS) =====\n");
 fprintf("Input file: %s\n\n", inFile);
 
-%% Run Task 1
-task1_partA(inFile, segmentStartSec, segmentDurSec);
+% --- Which parts to run (set flags) ---
+runTask1 = true;
+runTask2Realtime = false;   % set true to run the real-time 10-band EQ (requires audio devices)
+runPart3Full = true;        % run the 10s play + plots version (`part3_voice_step_by_step_play_and_plots`)
+runTask3FewSamples = true;  % also run the few-samples plots helper
 
-%% Run Task 3
-task3_part3_effects_few_samples(inFile, segmentStartSec, segmentDurSec);
+if runTask1
+    task1_partA(inFile, segmentStartSec, segmentDurSec);
+end
+
+if runTask2Realtime
+    try
+        task2_partB_realtime_10band_eq();
+    catch ME
+        warning('Task 2 realtime EQ failed: %s', ME.message);
+    end
+end
+
+if runPart3Full
+    try
+        part3_voice_step_by_step_play_and_plots;
+    catch ME
+        warning('Part3 step-by-step failed: %s', ME.message);
+    end
+end
+
+if runTask3FewSamples
+    task3_part3_effects_few_samples(inFile, segmentStartSec, segmentDurSec);
+end
 
 disp("===== ALL DONE =====");
 end
